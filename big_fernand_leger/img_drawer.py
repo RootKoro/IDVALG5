@@ -2,8 +2,6 @@
 # Licenceless
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
-from __future__ import print_function
-
 from sys import argv
 
 from cv2 import (
@@ -19,7 +17,7 @@ from cv2 import (
 )
 
 
-class BigFernandLeger:
+class ImgDrawer:
     """
     Module: IDV-ALGO5
     Step: 01
@@ -61,10 +59,6 @@ class BigFernandLeger:
         grey_img, inverted_blurred_img = self.img_transformer()
         sketch_img = divide(grey_img, inverted_blurred_img, scale=256.0)
 
-        # Save Sketch
-        # cv2.imwrite("sketch.png", sketch_img)
-
-        # Display sketch
         imshow("sketch image", sketch_img)
         waitKey(0)
         destroyAllWindows()
@@ -73,7 +67,7 @@ class BigFernandLeger:
 def main():
     try:
         if len(argv) > 2:
-            bfl = BigFernandLeger(argv[1], int(argv[2]))
+            bfl = ImgDrawer(argv[1], int(argv[2]))
             bfl.sketch_edge_drawer()
         else:
             raise Exception("""Please specify an image path and a kernel size.""")
@@ -86,7 +80,7 @@ Retry while checking the following steps:
     the second argument is an integer
     The integer given as second argument should be proportional o the image
 
-ex. big_fernand_leger.py assets/img.png 5
+ex. img_drawer.py assets/img.png 5
             """
         )
 
