@@ -2,8 +2,6 @@
 # Licenceless
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
-from __future__ import print_function
-
 from sys import argv
 
 from cv2 import (
@@ -19,7 +17,7 @@ from cv2 import (
 )
 
 
-class SaleVadorDali:
+class ImgDrawer:
     """
     Module: IDV-ALGO5
     Step: 01
@@ -73,7 +71,7 @@ class SaleVadorDali:
 def main():
     try:
         if len(argv) > 2:
-            bfl = SaleVadorDali(argv[1], int(argv[2]))
+            bfl = ImgDrawer(argv[1], int(argv[2]))
             bfl.sketch_edge_drawer()
         else:
             raise Exception("""Please specify an image path and a kernel size.""")
