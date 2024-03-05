@@ -1,6 +1,6 @@
-# BIG FERNAND LEGER
+# Sale Vador Dali
 
-IDV-ALGO5 | Etape 1 | Documentation
+IDV-ALGO5 | Etape 2 | Documentation
 
 ## Installation des dépendances requises
 ```bash
@@ -21,8 +21,12 @@ Nous avons choisi cette librairie plus précisément parmi les autres, principal
 
 ## Explication du déroulement
 
-Le program est structuré en classe pour faciliter son utilisation. 
+Le program est structuré en classe pour faciliter son utilisation.
+
 Sachant que les arguments sont attendus en ligne de commande, le première chose à faire est de vérifier si l'ensemble des arguments a bien été entré.
+- le premier argument représente le chemin absolu de l'image
+- le second argument représente le degrès de floutage à apporter à l'image (proportionnel à la taille de l'image)
+
 Ensuite, ces arguments sont directement passé à la classe afin de permettre les manipulation suivantes:
 - d'abord l'image subira sa première transformation (grisaye + inversion de l'image grisé)
 - ensuite vient la seconde transformation (floutage + seconde inversion de l'image flouté)
