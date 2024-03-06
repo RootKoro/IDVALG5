@@ -66,9 +66,8 @@ class ImgDrawer:
         return divide(grey_img, inverted_blurred_img, scale=256.0)
 
     def sketch_drawer(self) -> any:
-        speed(self.speed)
         img = self.sketch_edge_definer()
-        ret, binary_img = threshold(img, 127, 255, THRESH_BINARY)
+        imshow("img", img)
         width = img.shape[1]
         height = img.shape[0]
 
@@ -76,19 +75,21 @@ class ImgDrawer:
         self.screen.screensize(width, height)
         self.drawer = Turtle()
         self.screen.tracer(0)
+        self.drawer.speed(self.speed)
+        self.drawer.color(136, 136, 136)
 
-        for x_pos in range(int(height / 2), int(height / -2), -1):
+        for ypos in range(int(height / 2), int(height / -2), -1):
             self.drawer.penup()
-            self.drawer.goto(-(width / 2), x_pos)
+            self.drawer.goto(-(width / 2), ypos)
 
-            for y_pos in range(-int(width / 2), int(width / 2), 1):
-                pix_width = int(y_pos + (width / 2))
-                pix_height = int(height / 2 - x_pos)
-                if binary_img[pix_height, pix_width] == 0:
-                    self.drawer.pendown()
+            for xpos in range(-int(width / 2), int(width / 2), 1):
+                pix_width = int(xpos + (width / 2))
+                pix_height = int(height / 2 - ypos)
+                if img[pix_height, pix_width] >= 245:
+                    self.drawer.penup()
                     self.drawer.forward(1)
                 else:
-                    self.drawer.penup()
+                    self.drawer.pendown()
                     self.drawer.forward(1)
             self.screen.update()
 
