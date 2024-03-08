@@ -57,7 +57,7 @@ def main():
         else:
             raise Exception("")
     except:
-        print("""Please specify a valid image path and a kernel size.""")
+        print("""Please specify a valid image path.""")
 
 
 if __name__ == "__main__":
