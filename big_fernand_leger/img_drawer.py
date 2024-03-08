@@ -53,7 +53,7 @@ class ImgDrawer:
 
 def main():
     try:
-        if len(argv) >= 1:
+        if len(argv) > 1:
             bfl = ImgDrawer(argv[1])
             bfl.sketch_edge_drawer()
         else:
