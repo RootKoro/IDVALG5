@@ -1,6 +1,6 @@
 # Big Fernand Leger
 
-IDV-ALGO5 | Etape 2 | Documentation
+IDV-ALGO5 | Etape 1 | Documentation
 
 Ce programme a pour but de dessiner les contours d'une image grace à l'algorithme "Canny Edge detection" : lecture de l'image, détectiond des contours, affichage des contours de l'image.
 
