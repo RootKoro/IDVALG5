@@ -1,4 +1,4 @@
-# Author: Cyr Mathieu GUEYE
+# Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA, Hacene SADOUDI# Author: Cyr Mathieu GUEYE
 # Licenceless
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
