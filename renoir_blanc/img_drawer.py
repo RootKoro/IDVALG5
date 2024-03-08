@@ -3,17 +3,12 @@
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
 from sys import argv
-from time import time
-from turtle import Screen, Turtle, color, done, speed
+from turtle import Screen, Turtle, done
 
 from cv2 import (
-    COLOR_BGR2GRAY,
-    THRESH_BINARY,
     Canny,
     GaussianBlur,
     bitwise_not,
-    cvtColor,
-    divide,
     imread,
 )
 from numpy import median
@@ -23,7 +18,7 @@ from sklearn.neighbors import KDTree
 class ImgDrawer:
     """
     Module: IDV-ALGO5
-    Step: 01
+    Step: 04
     Goal: Draw a sketch
     """
 
@@ -84,10 +79,17 @@ class ImgDrawer:
         return bitwise_not(Canny(img, median_value, 255))
 
     def sketch_drawer(self) -> any:
+        """
+        1. get the sketch of the image
+        2. get the pixels of the sketch that are not white
+        3. initialize a KDTree
+        4. get the shape of the image
+        5. set up the screen and the drawer
+        6. drawing of each pixel following the algorithm of `Nearest neighbour search`
+        """
         img = self.sketch_edge_definer()
         coords = self.get_pixel_coords(img)
         tree = KDTree(coords)
-        start = time()
         width = img.shape[1]
         height = img.shape[0]
         current = 0
@@ -127,8 +129,6 @@ class ImgDrawer:
                     _, i = tree.query([tmp], k=2)
                     i = i.flatten()
                     current = i[1]
-        end = time()
-        print("execution time : ", end - start)
         done()
 
 
@@ -140,8 +140,7 @@ def main():
             drawer.sketch_drawer()
         else:
             raise Exception("")
-    except Exception as e:
-        print(e)
+    except:
         print(
             "Please specify a valid image path, a valid odd kernel size and a speed between 0 and 10."
         )

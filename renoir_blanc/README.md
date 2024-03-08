@@ -1,8 +1,8 @@
 # Zhang GUI
 
-IDV-ALGO5 | Etape 3 | Documentation
+IDV-ALGO5 | Etape 4 | Documentation
 
-Ce programme a pour but de dessiner les contours d'une image de manière animée en y applicant un flou grace aux algorithmes "Canny Edge detection" et "Gaussian blur" : lecture de l'image, détection des contours, application du flou, dessin animé de l'image.
+Ce programme a pour but de dessiner les contours d'une image de manière animée et réaliste avec l'algorithme de "Nearest Neighbore Search" en y applicant un flou grace aux algorithmes "Canny Edge detection" et "Gaussian blur" : lecture de l'image, détection des contours, application du flou, dessin animé de l'image.
 
 ## Requirements
 
@@ -10,6 +10,7 @@ Ce programme a pour but de dessiner les contours d'une image de manière animée
 - opencv-python (cv2)
 - turtle
 - numpy
+- scikit-learn
 
 ## Usage
 
@@ -36,6 +37,8 @@ Le choix de `Gaussian blur` se justifie par:
 - contrairement au flou radial dont le flou crée un effet de rotation ou de tourbillonnement autour du centre de l'image, il applique un flou isotropique, ce qui signifie qu'il est appliqué uniformément dans toutes les directions ;
 - Le flou encadré effectue des operations sur les pixels, nécessitant moins de ressources que le flou gaussien, mais ce dernier, même s'il applique un flou uniforme, pourrait produire des artéfacts visibles, notament sur les contours.
 
+Le choix de `scikit-learn` comme module s'explique simplement par la grande communauté, ainsi que son efficacité dans sa recherche de voisin.
+
 ## Explication de code
 
 Le programme fonctionne comme suite:
@@ -43,16 +46,13 @@ Le programme fonctionne comme suite:
 1. Lecture de l'image à l'appelle du programme (`img = imread(self.img_path)`).
     1. Si l'image n'existe pas ou a un mauvais format, une erreur est retournée.
 2. Application du flou gaussien selon le choix de l'utilisateur.
-3. Calcule de la médiane (`median_value = median(img)`).
+3. Calcule de la médiane (`median_value = median(img)`)..
 4. Application de l'algorithme de détection des contours `Canny Edge Detection` (`Canny(img, median_value, 255)`).
 5. Inversion de l'image trouvé après détection des contours (`bitwise_not(...)`).
-6. Paramétrage de l'écran qui servira à afficher le dessin.
-7. Pour chaque ligne de l'image (l'image considéré comme un tableau bidimentionnel (lignes + colones) de pixels) :
-    1. Pour chaque pixel de cette ligne:
-        1. Définir la position du pixel sur l'écran
-        2. Récupérer la couleur du pixel
-        3. Dessiner le pixel
-    2. Mettre à jour le statut de l'écran
+6. Récupération des coordonnées des pixels n'appartenant pas à l'arrière plan
+7. Initialisation d'un `KDTree` (organisation des pixels dans un espace k-dimensionnel)
+8. Paramétrage de l'écran qui servira à afficher le dessin.
+9. A partir du centre, application de l'algorithme de `Nearest Neighbore Search` afin de dessiner les contour pixel par pixel à partir en se basant sur les pixels colorés les plus proches les uns des autres, pour lui donner un meilleur effet visuel
 8. cacher les curseurs (tortues)
 
 ## Exemple
@@ -60,7 +60,7 @@ Le programme fonctionne comme suite:
 Structure de dossier:
 
     root
-    |--zhang_gui
+    |--renoir_blanc
     |----img_drawer.py
     |--assets
     |----licorne.png
@@ -68,5 +68,5 @@ Structure de dossier:
 à partir du répertoire root:
 
 ```bash
-python3 zhang_gui/img_drawer.py assets/licorne.png 1 0
+python3 renoir_blanc/img_drawer.py assets/licorne.png 1 5
 ```
