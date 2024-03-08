@@ -35,12 +35,13 @@ Le choix de `OpenCV` peut être justifié par:
 
 Le programme fonctionne comme suite:
 
-1. Lecture de l'image à l'appelle du programme (`img = imread(self.img_path)`)
+1. Lecture de l'image à l'appelle du programme (`img = imread(self.img_path)`).
     1. Si l'image n'existe pas ou a un mauvais format, une erreur est retournée.
-2. Calcule de la médiane (`median_value = median(img)`)
-3. Application de l'algorithme de détection des contours `Canny Edge Detection` (`Canny(img, median_value, 255)`)
-4. Inversion de l'image trouvé après détection des contours (`bitwise_not(...)`)
-5. Affihchage de l'image (`imshow("sketch image", sketch_img)`)
+2. Application des nuances de gris pour faciliter la détection de la médiane.
+2. Calcule de la médiane (`median_value = median(img)`).
+3. Application de l'algorithme de détection des contours `Canny Edge Detection` (`Canny(img, median_value, 255)`).
+4. Inversion de l'image trouvé après détection des contours (`bitwise_not(...)`).
+5. Affihchage de l'image (`imshow("sketch image", sketch_img)`).
 
 ## Exemple
 
