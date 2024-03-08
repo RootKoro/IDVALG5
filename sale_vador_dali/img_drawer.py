@@ -69,7 +69,7 @@ def main():
         svd.sketch_edge_drawer()
     except:
         print(
-            "Please specify a valid image path and a valid even (fr. impaire) kernel size."
+            "Please specify a valid image path and a valid odd (fr. impaire) kernel size."
         )
 
 
