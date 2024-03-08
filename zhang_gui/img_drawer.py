@@ -3,17 +3,19 @@
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
 from sys import argv
-from turtle import Screen, Turtle, done, speed, color
+from turtle import Screen, Turtle, color, done, speed
 
 from cv2 import (
     COLOR_BGR2GRAY,
     THRESH_BINARY,
+    Canny,
     GaussianBlur,
     bitwise_not,
     cvtColor,
     divide,
     imread,
 )
+from numpy import median
 
 
 class ImgDrawer:
@@ -23,14 +25,17 @@ class ImgDrawer:
     Goal: Draw a sketch
     """
 
+    img_path: str
     k_size: int
     screen: Screen
     drawer: Turtle
 
-    def __init__(self, img_path: str, k_size: int | str, _speed: int | str = 5):
+    def __init__(self, img_path: str, k_size: int | str, speed: int | str = 5):
+        self.img_path = img_path
         self.k_size = int(k_size)
-        self.image = imread(img_path)
-        speed(int(_speed))
+        self.speed = speed
+        self.drawer = Turtle()
+        self.screen = Screen()
 
     def rgb_to_hex(self, r: int, g: int, b: int) -> None:
         """
@@ -46,42 +51,42 @@ class ImgDrawer:
         """
         return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
-    def img_transformer(self) -> None:
+    def sketch_edge_definer(self) -> any:
         """
-        1- Convert the image to grey
-        2- Invert the converted image
-        3- Blur the inverted image
-        4- invert the blurred image
-
-        Params:
-        -------
-            img_path : string
-                path to the image
-            k_size : int
-                kernel size ; which might defer depending on the image ;
-                on small images, the kernel size should be very small
-                and for large images, the kernel size should be very large
+        1- Read the image
+        2- Check if the k_size:
+            a- k_size is given: image is blured with the gaussian algorithm
+            b- k_size is not given: image is not blured, we go on the next step
+        3- Get the median value of the img
+            The image is converted into a 2 dimensional array of bits
+            the median is retrieved from that array
+        4- draw a new 2 dimensional array of bits containing the points
+        retreived from the calculation of Canny algorithm
+        5- return the new img corresponding to the new array
         """
-        grey_img = cvtColor(self.image, COLOR_BGR2GRAY)
-        inverted_img = bitwise_not(grey_img)
-        blurred_img = GaussianBlur(inverted_img, (self.k_size, self.k_size), 0)
-        inverted_blurred_img = bitwise_not(blurred_img)
+        img = imread(self.img_path)
+        if self.k_size > 0:
+            img = GaussianBlur(img, (self.k_size, self.k_size), 0)
+        median_value = median(img)
 
-        return (grey_img, inverted_blurred_img)
-
-    def sketch_edge_definer(self) -> None:
-        grey_img, inverted_blurred_img = self.img_transformer()
-        self.image = divide(grey_img, inverted_blurred_img, scale=256.0)
+        return bitwise_not(Canny(img, median_value, 255))
 
     def sketch_drawer(self) -> any:
-        img = self.image
+        """
+        1. get the sketch_edge_definer result from `self.img_path`
+        2. setup the screen to prepare the drawing
+        3. for each line:
+            1. for each pixel on the line
+                a. draw the pixel
+        4. hide turtles
+        """
+        img = self.sketch_edge_definer()
         width = img.shape[1]
         height = img.shape[0]
 
-        self.screen = Screen()
+        self.screen.title("Zhang Gui")
         self.screen.screensize(width, height)
-        self.drawer = Turtle()
-        self.screen.tracer(0)
+        self.screen.tracer(self.speed)
 
         for ypos in range(int(height / 2), int(height / -2), -1):
             self.drawer.penup()
@@ -97,7 +102,6 @@ class ImgDrawer:
                     img[pix_height, pix_width],
                 )
                 self.drawer.color(drawer_color)
-                color("white")
                 self.drawer.forward(1)
             self.screen.update()
             self.drawer.hideturtle()
@@ -108,14 +112,16 @@ class ImgDrawer:
 
 def main():
     try:
-        if len(argv) > 3:
+        if len(argv) > 3 and int(argv[3]) in range(11):
             drawer = ImgDrawer(argv[1], argv[2], argv[3])
             drawer.sketch_edge_definer()
             drawer.sketch_drawer()
         else:
-            raise Exception("""Please specify an image path and a kernel size.""")
-    except Exception as e:
-        print(e)
+            raise Exception("")
+    except:
+        print(
+            "Please specify a valid image path, a valid odd kernel size and a speed between 0 and 10."
+        )
 
 
 if __name__ == "__main__":
