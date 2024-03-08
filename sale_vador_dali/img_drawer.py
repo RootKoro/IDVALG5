@@ -67,9 +67,10 @@ def main():
             raise Exception("")
 
         svd.sketch_edge_drawer()
-    except Exception as e:
-        print(e)
-        print("""Please specify a valid image path and a kernel size.""")
+    except:
+        print(
+            "Please specify a valid image path and a valid even (fr. impaire) kernel size."
+        )
 
 
 if __name__ == "__main__":

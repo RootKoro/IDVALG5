@@ -19,7 +19,7 @@ pip install -r requirements.txt
 ```
 3. Exécuter le programme avec la commande:
 ```bash
-python3 path/to/img_drawer.py <img_path>
+python3 path/to/img_drawer.py <img_path> <blur>
 ```
 
 
@@ -60,5 +60,5 @@ Structure de dossier:
 à partir du répertoire root:
 
 ```bash
-python3 big_fernand_leger/img_drawer.py assets/licorne.png
+python3 big_fernand_leger/img_drawer.py assets/lion.png 3
 ```
