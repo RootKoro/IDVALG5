@@ -60,5 +60,5 @@ Structure de dossier:
 à partir du répertoire root:
 
 ```bash
-python3 big_fernand_leger/img_drawer.py assets/lion.png 3
+python3 sale_vador_dali/img_drawer.py assets/lion.png 3
 ```
