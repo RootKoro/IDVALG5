@@ -84,14 +84,6 @@ class ImgDrawer:
         return bitwise_not(Canny(img, median_value, 255))
 
     def sketch_drawer(self) -> any:
-        """
-        1. get the sketch_edge_definer result from `self.img_path`
-        2. setup the screen to prepare the drawing
-        3. for each line:
-            1. for each pixel on the line
-                a. draw the pixel
-        4. hide turtles
-        """
         img = self.sketch_edge_definer()
         coords = self.get_pixel_coords(img)
         tree = KDTree(coords)
