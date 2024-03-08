@@ -32,7 +32,6 @@ class ImgDrawer:
     def sketch_edge_drawer(self) -> tuple:
         """
         1- Read the image
-        2- turn the img into a gray image
         3- Get the median value of the img
             the image is converted into a 2 dimensional array of bits
             the median is retrieved from that array
@@ -41,10 +40,9 @@ class ImgDrawer:
         5- Show the new img corresponding to the new array
         """
         img = imread(self.img_path)
-        gray_img = cvtColor(img, COLOR_BGR2GRAY)
-        median_value = median(gray_img)
+        median_value = median(img)
 
-        sketch_img = bitwise_not(Canny(gray_img, median_value, 255))
+        sketch_img = bitwise_not(Canny(img, median_value, 255))
 
         imshow("sketch image", sketch_img)
         waitKey(0)
