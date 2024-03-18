@@ -1,20 +1,19 @@
-# Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA, Hacene SADOUDI
+# Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA
 # Licenceless
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
 from numpy import median
 from sys import argv
 
 from cv2 import (
-    COLOR_BGR2GRAY,
     Canny,
     bitwise_not,
-    cvtColor,
     destroyAllWindows,
     imread,
     imshow,
     waitKey,
 )
+
+CMD = ("-i", "--image")
 
 
 class ImgDrawer:
@@ -49,15 +48,26 @@ class ImgDrawer:
         destroyAllWindows()
 
 
+def help_menu():
+    print("Usage:\n")
+    print("img_drawer.py [-h|--help]")
+    print("img_drawer.py [-i|--image] path/to/image")
+
+
+def is_valid(cmd: str) -> bool:
+    """ """
+    global CMD
+    return True if cmd in CMD else False
+
+
 def main():
     try:
-        if len(argv) > 1:
-            bfl = ImgDrawer(argv[1])
-            bfl.sketch_edge_drawer()
+        if len(argv) > 2 and is_valid(argv[1]):
+            ...
         else:
-            raise Exception("")
-    except:
-        print("""Please specify a valid image path.""")
+            raise Exception
+    except Exception:
+        help_menu()
 
 
 if __name__ == "__main__":
