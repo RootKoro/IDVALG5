@@ -5,11 +5,10 @@
 from numpy import median
 from sys import argv
 
+import cv2
 from cv2 import (
-    COLOR_BGR2GRAY,
     GaussianBlur,
     Canny,
-    cvtColor,
     bitwise_not,
     destroyAllWindows,
     imread,
@@ -48,6 +47,8 @@ class ImgDrawer:
         img = imread(self.img_path)
         if self.k_size > 0:
             img = GaussianBlur(img, (self.k_size, self.k_size), 0)
+
+        # blurred = cv2.
         median_value = median(img)
 
         sketch_img = bitwise_not(Canny(img, median_value, 255))
