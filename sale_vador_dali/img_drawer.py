@@ -5,7 +5,6 @@ from argparse import ArgumentParser
 from numpy import median
 from os.path import exists
 
-import cv2
 from blurgenerator import lens_blur
 from cv2 import (
     GaussianBlur,
