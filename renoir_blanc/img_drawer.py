@@ -3,25 +3,22 @@
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
 from sys import argv
-from turtle import Screen, Turtle, color, done, speed
+from turtle import Screen, Turtle, done
 
 from cv2 import (
-    COLOR_BGR2GRAY,
-    THRESH_BINARY,
     Canny,
     GaussianBlur,
     bitwise_not,
-    cvtColor,
-    divide,
     imread,
 )
 from numpy import median
+from sklearn.neighbors import KDTree
 
 
 class ImgDrawer:
     """
     Module: IDV-ALGO5
-    Step: 01
+    Step: 04
     Goal: Draw a sketch
     """
 
@@ -33,7 +30,7 @@ class ImgDrawer:
     def __init__(self, img_path: str, k_size: int | str, speed: int | str = 5):
         self.img_path = img_path
         self.k_size = int(k_size)
-        self.speed = speed
+        self.speed = int(speed)
         self.drawer = Turtle()
         self.screen = Screen()
 
@@ -50,6 +47,16 @@ class ImgDrawer:
             str: Hexadecimal color code in the format #RRGGBB.
         """
         return "#{:02x}{:02x}{:02x}".format(r, g, b)
+
+    def get_pixel_coords(self, img: any) -> list:
+        """ """
+        coords = []
+        height = len(img)
+        for y, line in enumerate(img):
+            for x, value in enumerate(line):
+                if value <= 127:
+                    coords.append([x, height - y])
+        return coords
 
     def sketch_edge_definer(self) -> any:
         """
@@ -73,40 +80,55 @@ class ImgDrawer:
 
     def sketch_drawer(self) -> any:
         """
-        1. get the sketch_edge_definer result from `self.img_path`
-        2. setup the screen to prepare the drawing
-        3. for each line:
-            1. for each pixel on the line
-                a. draw the pixel
-        4. hide turtles
+        1. get the sketch of the image
+        2. get the pixels of the sketch that are not white
+        3. initialize a KDTree
+        4. get the shape of the image
+        5. set up the screen and the drawer
+        6. drawing of each pixel following the algorithm of `Nearest neighbour search`
         """
         img = self.sketch_edge_definer()
+        coords = self.get_pixel_coords(img)
+        tree = KDTree(coords)
         width = img.shape[1]
         height = img.shape[0]
+        current = 0
+        explored_ind = [0]
 
         self.screen.title("Zhang Gui")
         self.screen.screensize(width, height)
         self.screen.tracer(self.speed)
-
-        for ypos in range(int(height / 2), int(height / -2), -1):
-            self.drawer.penup()
-            self.drawer.goto(-(width / 2), ypos)
-
-            self.drawer.pendown()
-            for xpos in range(-int(width / 2), int(width / 2), 1):
-                pix_width = int(xpos + (width / 2))
-                pix_height = int(height / 2 - ypos)
-                drawer_color = self.rgb_to_hex(
-                    img[pix_height, pix_width],
-                    img[pix_height, pix_width],
-                    img[pix_height, pix_width],
-                )
-                self.drawer.color(drawer_color)
-                self.drawer.forward(1)
-            self.screen.update()
-            self.drawer.hideturtle()
         self.drawer.hideturtle()
+        self.drawer.penup()
 
+        while len(coords) > 1:
+            self.drawer.goto(
+                coords[current][0] - (width / 2), coords[current][1] - (height / 2)
+            )
+            ind = tree.query_radius([coords[current]], r=1.42)
+            ind = ind[0].tolist()
+            ind = [value for value in ind if value not in explored_ind]
+
+            if len(ind) >= 1:
+                self.drawer.pendown()
+                self.drawer.goto(
+                    coords[ind[0]][0] - (width / 2), coords[ind[0]][1] - (height / 2)
+                )
+                self.drawer.penup()
+                explored_ind.append(ind[0])
+                current = ind[0]
+
+            else:
+                tmp = coords[current]
+                coords = [
+                    coords[i] for i in range(0, len(coords)) if i not in explored_ind
+                ]
+                explored_ind = []
+                if len(coords) > 1:
+                    tree = KDTree(coords)
+                    _, i = tree.query([tmp], k=2)
+                    i = i.flatten()
+                    current = i[1]
         done()
 
 
