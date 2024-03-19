@@ -55,21 +55,16 @@ def is_valid(cmd: str) -> bool:
     return True if cmd in CMD else False
 
 
-def main():
-    try:
-        if len(argv) > 2 and is_valid(argv[1]):
-            if exists(argv[2]):
-                bfl = ImgDrawer()
-                bfl.sketch_edge_drawer(str(argv[2]))
-            else:
-                print("Error:: File does not exist !")
+try:
+    if len(argv) > 2 and is_valid(argv[1]):
+        if exists(argv[2]):
+            bfl = ImgDrawer()
+            bfl.sketch_edge_drawer(str(argv[2]))
         else:
-            raise Exception
-    except TypeError:
-        print("Unsupported type of file given !")
-    except Exception as e:
-        help_menu()
-
-
-if __name__ == "__main__":
-    main()
+            print("Error:: File does not exist !")
+    else:
+        raise Exception
+except TypeError:
+    print("Unsupported type of file given !")
+except Exception as e:
+    help_menu()
