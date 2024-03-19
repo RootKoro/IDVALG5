@@ -1,37 +1,37 @@
 # Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA, Hacene SADOUDI
 # Licenceless
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
-from sys import argv
+from argparse import ArgumentParser
+from numpy import median
+from os.path import exists
 from turtle import Screen, Turtle, color, done, speed
 
+from blurgenerator import lens_blur
 from cv2 import (
-    COLOR_BGR2GRAY,
-    THRESH_BINARY,
-    Canny,
     GaussianBlur,
+    Canny,
+    bilateralFilter,
     bitwise_not,
-    cvtColor,
-    divide,
+    boxFilter,
     imread,
+    medianBlur,
 )
-from numpy import median
+
+BLURS = ("bilateral", "gaussian", "lens", "linear", "median", "none", "default")
 
 
 class ImgDrawer:
     """
     Module: IDV-ALGO5
-    Step: 01
-    Goal: Draw a sketch
+    Step: 03
+    Goal: Draw an animated sketch
     """
 
-    img_path: str
     k_size: int
     screen: Screen
     drawer: Turtle
 
-    def __init__(self, img_path: str, k_size: int | str, speed: int | str = 5):
-        self.img_path = img_path
+    def __init__(self, k_size: int | str, speed: int | str = 5):
         self.k_size = int(k_size)
         self.speed = speed
         self.drawer = Turtle()
@@ -51,12 +51,31 @@ class ImgDrawer:
         """
         return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
-    def sketch_edge_definer(self) -> any:
+    def image_blurer(self, image: any) -> any:
+        """
+        From the image object:
+            - check the user choice
+            - return the corresponding blurred image
+        """
+        if self.blur_type == "bilateral":
+            return bilateralFilter(image, self.ksize, 75, 75)
+        elif self.blur_type == "gaussian":
+            return GaussianBlur(image, (self.ksize, self.ksize), 0)
+        elif self.blur_type == "lens":
+            return lens_blur(image, self.ksize)
+        elif self.blur_type == "linear":
+            return boxFilter(image, -1, (self.ksize, self.ksize))
+        elif self.blur_type == "median":
+            return medianBlur(image, self.ksize)
+        elif self.blur_type == "default":
+            return GaussianBlur(image, (3, 3), 0)
+        else:
+            return image
+
+    def sketch_edge_definer(self, image: any) -> any:
         """
         1- Read the image
-        2- Check if the k_size:
-            a- k_size is given: image is blured with the gaussian algorithm
-            b- k_size is not given: image is not blured, we go on the next step
+        2- get the blured image
         3- Get the median value of the img
             The image is converted into a 2 dimensional array of bits
             the median is retrieved from that array
@@ -64,14 +83,11 @@ class ImgDrawer:
         retreived from the calculation of Canny algorithm
         5- return the new img corresponding to the new array
         """
-        img = imread(self.img_path)
-        if self.k_size > 0:
-            img = GaussianBlur(img, (self.k_size, self.k_size), 0)
-        median_value = median(img)
+        blured = self.image_blurer(image)
+        median_value = median(blured)
+        return bitwise_not(Canny(blured, median_value, 255))
 
-        return bitwise_not(Canny(img, median_value, 255))
-
-    def sketch_drawer(self) -> any:
+    def sketch_drawer(self, img_path) -> any:
         """
         1. get the sketch_edge_definer result from `self.img_path`
         2. setup the screen to prepare the drawing
@@ -80,9 +96,10 @@ class ImgDrawer:
                 a. draw the pixel
         4. hide turtles
         """
-        img = self.sketch_edge_definer()
-        width = img.shape[1]
-        height = img.shape[0]
+        image = imread(img_path)
+        sketch_edge = self.sketch_edge_definer(image)
+        width = sketch_edge.shape[1]
+        height = sketch_edge.shape[0]
 
         self.screen.title("Zhang Gui")
         self.screen.screensize(width, height)
@@ -97,9 +114,9 @@ class ImgDrawer:
                 pix_width = int(xpos + (width / 2))
                 pix_height = int(height / 2 - ypos)
                 drawer_color = self.rgb_to_hex(
-                    img[pix_height, pix_width],
-                    img[pix_height, pix_width],
-                    img[pix_height, pix_width],
+                    sketch_edge[pix_height, pix_width],
+                    sketch_edge[pix_height, pix_width],
+                    sketch_edge[pix_height, pix_width],
                 )
                 self.drawer.color(drawer_color)
                 self.drawer.forward(1)
@@ -110,19 +127,51 @@ class ImgDrawer:
         done()
 
 
-def main():
-    try:
-        if len(argv) > 3 and int(argv[3]) in range(11):
-            drawer = ImgDrawer(argv[1], argv[2], argv[3])
-            drawer.sketch_edge_definer()
-            drawer.sketch_drawer()
-        else:
-            raise Exception("")
-    except:
-        print(
-            "Please specify a valid image path, a valid odd kernel size and a speed between 0 and 10."
-        )
+def help_menu():
+    print("Usage:")
+    print("img_drawer.py [-h|--help]")
+    print(
+        "img_drawer.py -i|--image path/to/image -b|--blur blur_type [-k|--kernel kernel] [-s|--speed speed]"
+    )
+    print(
+        "`blur_type` in : bilateral, gaussian, lens, linear, median and none (for no blur)"
+    )
+    print("`kernel` : an integer greater than 0")
+    print("ex. img_drawer.py -i lion.png -b gaussian -k 3")
 
 
-if __name__ == "__main__":
-    main()
+try:
+    args = ArgumentParser()
+    args.add_argument("-i", "--image", required=True, help="image path")
+    args.add_argument(
+        "-b",
+        "--blur",
+        required=True,
+        help="blur type : bilateral, gaussian, lens, linear, median and none (for no blur)",
+    )
+    args.add_argument("-k", "--kernel", required=False, help="kernel size")
+    args.add_argument("-s", "--speed", required=False, help="speed of the turtle")
+    args = vars(args.parse_args())
+
+    if not exists(args["image"]):
+        print("error: File does not exist !")
+        exit(1)
+    if args["blur"] not in BLURS:
+        print(f"error: Your choice must be in {BLURS} !")
+        exit(1)
+    if args["blur"] not in ("none", "default") and args["kernel"] == None:
+        print("error: this blur type needs a kernel size (blur level) !")
+        exit(1)
+    if args["blur"] not in ("none", "default") and int(args["kernel"]) < 1:
+        print("error: The kernel size must be greater than 1 !")
+        exit(1)
+    if args["blur"] in ("gaussian", "median") and int(args["kernel"]) % 2 == 0:
+        print("error: For the gaussian or median blur, the kernel value must be odd !")
+        exit(1)
+
+    svd = ImgDrawer(args["blur"], int(args.get("kernel", -1)))
+    svd.sketch_edge_drawer(args["image"])
+except TypeError:
+    print("error: Unsupported type of file given !")
+except Exception:
+    help_menu()
