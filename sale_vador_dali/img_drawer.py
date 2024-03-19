@@ -82,7 +82,7 @@ def help_menu():
     print("Usage:")
     print("img_drawer.py [-h|--help]")
     print(
-        "img_drawer.py [-i|--image] path/to/image [-b|--blur] blur_type [-k|--kernel] kernel"
+        "img_drawer.py -i|--image path/to/image -b|--blur blur_type [-k|--kernel kernel]"
     )
     print(
         "`blur_type` in : bilateral, gaussian, lens, linear, median and none (for no blur)"
