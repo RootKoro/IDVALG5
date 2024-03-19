@@ -1,5 +1,9 @@
 opencv-python==4.9.0.80
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 numpy==1.26.4
 >>>>>>> 5d073e7d437323003d09e49be75fae81574891a5
+=======
+numpy==1.26.4
+>>>>>>> b09fefbca1a2ca94b1c00231af2d457274fe2e63

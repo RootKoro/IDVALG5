@@ -1,20 +1,20 @@
-# Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA, Hacene SADOUDI
+# Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA
 # Licenceless
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 
 from numpy import median
+from os.path import exists
 from sys import argv
 
 from cv2 import (
-    COLOR_BGR2GRAY,
     Canny,
     bitwise_not,
-    cvtColor,
     destroyAllWindows,
     imread,
     imshow,
     waitKey,
 )
+
+CMD = ("-i", "--image")
 
 
 class ImgDrawer:
@@ -24,24 +24,18 @@ class ImgDrawer:
     Goal: Draw a sketch
     """
 
-    img_path: str
-
-    def __init__(self, img_path: str):
-        self.img_path = img_path
-
-    def sketch_edge_drawer(self) -> tuple:
+    def sketch_edge_drawer(self, image_path: str) -> None:
         """
         1- Read the image
-        3- Get the median value of the img
+        2- Get the median value of the img
             the image is converted into a 2 dimensional array of bits
-            the median is retrieved from that array
-        4- draw a new 2 dimensional array of bits containing the points
-            retreived from the calculation of Canny algorithm
-        5- Show the new img corresponding to the new array
+            from which the median value of bits is retreived
+        3- From Canny edge detection and threshold calculation defining
+            a two dimentionnal array of point corresponding to the sketch
+        4- Show the new img corresponding to the new array
         """
-        img = imread(self.img_path)
+        img = imread(image_path)
         median_value = median(img)
-
         sketch_img = bitwise_not(Canny(img, median_value, 255))
 
         imshow("sketch image", sketch_img)
@@ -49,15 +43,32 @@ class ImgDrawer:
         destroyAllWindows()
 
 
+def help_menu():
+    print("Usage:")
+    print("img_drawer.py [-h|--help]")
+    print("img_drawer.py [-i|--image] path/to/image")
+
+
+def is_valid(cmd: str) -> bool:
+    """ """
+    global CMD
+    return True if cmd in CMD else False
+
+
 def main():
     try:
-        if len(argv) > 1:
-            bfl = ImgDrawer(argv[1])
-            bfl.sketch_edge_drawer()
+        if len(argv) > 2 and is_valid(argv[1]):
+            if exists(argv[2]):
+                bfl = ImgDrawer()
+                bfl.sketch_edge_drawer(str(argv[2]))
+            else:
+                print("Error:: File does not exist !")
         else:
-            raise Exception("")
-    except:
-        print("""Please specify a valid image path.""")
+            raise Exception
+    except TypeError:
+        print("Unsupported type of file given !")
+    except Exception as e:
+        help_menu()
 
 
 if __name__ == "__main__":
