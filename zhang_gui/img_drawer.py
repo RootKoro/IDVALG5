@@ -133,7 +133,7 @@ class ImgDrawer:
 
 def help_menu():
     print("Usage:")
-    print("img_drawer.py [-h|--help]")
+    print("img_drawer.py [-h/--help]")
     print(
         "img_drawer.py -i/--image path/to/image -b/--blur blur_type [-k/--kernel kernel] [-s/--speed speed]"
     )
