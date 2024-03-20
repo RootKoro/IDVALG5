@@ -19,7 +19,6 @@ from cv2 import (
     waitKey,
 )
 
-CMD = ("-b", "-i", "-k", "--blur", "--image", "--kernel")
 BLURS = ("bilateral", "gaussian", "lens", "linear", "median", "none", "default")
 
 
@@ -82,19 +81,13 @@ def help_menu():
     print("Usage:")
     print("img_drawer.py [-h|--help]")
     print(
-        "img_drawer.py [-i|--image] path/to/image [-b|--blur] blur_type [-k|--kernel] kernel"
+        "img_drawer.py -i|--image path/to/image -b|--blur blur_type [-k|--kernel kernel]"
     )
     print(
         "`blur_type` in : bilateral, gaussian, lens, linear, median and none (for no blur)"
     )
     print("`kernel` : an integer greater than 0")
     print("ex. img_drawer.py -i lion.png -b gaussian -k 3")
-
-
-def is_valid(cmd: str) -> bool:
-    """ """
-    global CMD
-    return True if cmd in CMD else False
 
 
 try:
