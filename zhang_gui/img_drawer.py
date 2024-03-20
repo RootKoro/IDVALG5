@@ -5,7 +5,7 @@ from _tkinter import TclError
 from argparse import ArgumentParser
 from numpy import median
 from os.path import exists
-from turtle import Screen, Turtle, color, done, speed
+from turtle import Screen, Turtle, done
 
 from blurgenerator import lens_blur
 from cv2 import (
