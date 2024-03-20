@@ -20,7 +20,7 @@ pip install -r requirements.txt
 ```
 3. Exécuter le programme avec la commande:
 ```bash
-python3 path/to/img_drawer.py <img_path> <blur> <speed>
+python3 -i|--image path/to/img_drawer.py <img_path> -b|--blur <blur_type> [-k|--kernel <ksize>] [-s|--speed <speed>]
 ```
 
 
@@ -32,17 +32,12 @@ Le choix de `OpenCV` peut être justifié par:
 - la renommée ;
 - l'expérience (Certains d'entre nous ont déjà eu à utiliser `opencv` dans d'autres contextes).
 
-Le choix de `Gaussian blur` se justifie par:
-- contrairement au flou radial dont le flou crée un effet de rotation ou de tourbillonnement autour du centre de l'image, il applique un flou isotropique, ce qui signifie qu'il est appliqué uniformément dans toutes les directions ;
-- Le flou encadré effectue des operations sur les pixels, nécessitant moins de ressources que le flou gaussien, mais ce dernier, même s'il applique un flou uniforme, pourrait produire des artéfacts visibles, notament sur les contours.
-
 ## Explication de code
 
 Le programme fonctionne comme suite:
 
-1. Lecture de l'image à l'appelle du programme (`img = imread(self.img_path)`).
-    1. Si l'image n'existe pas ou a un mauvais format, une erreur est retournée.
-2. Application du flou gaussien selon le choix de l'utilisateur.
+1. Lecture de l'image à l'appelle du programme (`imread(self.img_path)`).
+2. Application du flou choisi par l'utilisateur l'utilisateur.
 3. Calcule de la médiane (`median_value = median(img)`).
 4. Application de l'algorithme de détection des contours `Canny Edge Detection` (`Canny(img, median_value, 255)`).
 5. Inversion de l'image trouvé après détection des contours (`bitwise_not(...)`).
@@ -68,5 +63,5 @@ Structure de dossier:
 à partir du répertoire root:
 
 ```bash
-python3 zhang_gui/img_drawer.py assets/licorne.png 1 0
+python3 -i zhang_gui/img_drawer.py assets/licorne.png -b median -k 1 -s 10
 ```

@@ -1,6 +1,7 @@
 # Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA, Hacene SADOUDI
 # Licenceless
 
+from _tkinter import TclError
 from argparse import ArgumentParser
 from numpy import median
 from os.path import exists
@@ -27,11 +28,14 @@ class ImgDrawer:
     Goal: Draw an animated sketch
     """
 
+    blur_type: str
     k_size: int
-    screen: Screen
+    speed: int
     drawer: Turtle
+    screen: Screen
 
-    def __init__(self, k_size: int | str, speed: int | str = 5):
+    def __init__(self, blur: str, k_size: int | str, speed: int | str = 5):
+        self.blur_type = blur
         self.k_size = int(k_size)
         self.speed = speed
         self.drawer = Turtle()
@@ -134,10 +138,14 @@ def help_menu():
         "img_drawer.py -i|--image path/to/image -b|--blur blur_type [-k|--kernel kernel] [-s|--speed speed]"
     )
     print(
-        "`blur_type` in : bilateral, gaussian, lens, linear, median and none (for no blur)"
+        "`blur_type` in : default, bilateral, gaussian, lens, linear, median and none (for no blur)"
     )
     print("`kernel` : an integer greater than 0")
-    print("ex. img_drawer.py -i lion.png -b gaussian -k 3")
+    print("`speed`: the spped of the speed of the drawing")
+    print("\nNote:")
+    print("for default and none (blur) you don't need to specify any kernel")
+    print("for gaussian and median (blur) the kernel value must be odd")
+    print("\nex. img_drawer.py -i lion.png -b gaussian -k 3 -s 1")
 
 
 try:
@@ -169,8 +177,16 @@ try:
         print("error: For the gaussian or median blur, the kernel value must be odd !")
         exit(1)
 
-    svd = ImgDrawer(args["blur"], int(args.get("kernel", -1)))
-    svd.sketch_edge_drawer(args["image"])
+    blur = args["blur"]
+    kernel = args["kernel"] if args["kernel"] else 0
+    svd = ImgDrawer(
+        args["blur"],
+        int(args["kernel"]) if args["kernel"] else 0,
+        int(args["speed"]) if args["speed"] else 0,
+    )
+    svd.sketch_drawer(args["image"])
+except TclError:
+    print("Forced closing of sketch!")
 except TypeError:
     print("error: Unsupported type of file given !")
 except Exception:
