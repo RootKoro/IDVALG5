@@ -29,14 +29,14 @@ class ImgDrawer:
     """
 
     blur_type: str
-    k_size: int
+    ksize: int
     speed: int
     drawer: Turtle
     screen: Screen
 
-    def __init__(self, blur: str, k_size: int | str, speed: int | str = 5):
+    def __init__(self, blur: str, ksize: int | str, speed: int | str = 5):
         self.blur_type = blur
-        self.k_size = int(k_size)
+        self.ksize = int(ksize)
         self.speed = int(speed)
         self.drawer = Turtle()
         self.screen = Screen()
@@ -78,14 +78,13 @@ class ImgDrawer:
 
     def sketch_edge_definer(self, image: any) -> any:
         """
-        1- Read the image
-        2- get the blured image
-        3- Get the median value of the img
+        1- get the blured image
+        2- Get the median value of the img
             The image is converted into a 2 dimensional array of bits
-            the median is retrieved from that array
-        4- draw a new 2 dimensional array of bits containing the points
+            from which the median value is retreived
+        3- draw a new 2 dimensional array of bits containing the points
         retreived from the calculation of Canny algorithm
-        5- return the new img corresponding to the new array
+        4- return the new img corresponding to the new array
         """
         blured = self.image_blurer(image)
         median_value = median(blured)
@@ -93,7 +92,7 @@ class ImgDrawer:
 
     def sketch_drawer(self, img_path) -> any:
         """
-        1. get the sketch_edge_definer result from `self.img_path`
+        1. get the sketch of the image
         2. setup the screen to prepare the drawing
         3. for each line:
             1. for each pixel on the line
