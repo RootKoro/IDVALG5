@@ -45,8 +45,8 @@ class ImgDrawer:
 
 def help_menu():
     print("Usage:")
-    print("img_drawer.py [-h|--help]")
-    print("img_drawer.py [-i|--image] path/to/image")
+    print("img_drawer.py [-h/--help]")
+    print("img_drawer.py [-i/--image] path/to/image")
 
 
 def is_valid(cmd: str) -> bool:
