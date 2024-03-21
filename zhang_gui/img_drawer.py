@@ -5,7 +5,7 @@ from _tkinter import TclError
 from argparse import ArgumentParser
 from numpy import median
 from os.path import exists
-from turtle import Screen, Turtle, color, done, speed
+from turtle import Screen, Turtle, done
 
 from blurgenerator import lens_blur
 from cv2 import (
@@ -37,7 +37,7 @@ class ImgDrawer:
     def __init__(self, blur: str, k_size: int | str, speed: int | str = 5):
         self.blur_type = blur
         self.k_size = int(k_size)
-        self.speed = speed
+        self.speed = int(speed)
         self.drawer = Turtle()
         self.screen = Screen()
 
@@ -133,9 +133,9 @@ class ImgDrawer:
 
 def help_menu():
     print("Usage:")
-    print("img_drawer.py [-h|--help]")
+    print("img_drawer.py [-h/--help]")
     print(
-        "img_drawer.py -i|--image path/to/image -b|--blur blur_type [-k|--kernel kernel] [-s|--speed speed]"
+        "img_drawer.py -i/--image path/to/image -b/--blur blur_type [-k/--kernel kernel] [-s/--speed speed]"
     )
     print(
         "`blur_type` in : default, bilateral, gaussian, lens, linear, median and none (for no blur)"
