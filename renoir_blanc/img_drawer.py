@@ -1,4 +1,4 @@
-# Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA, Hacene SADOUDI
+# Author: Cyr Mathieu GUEYE, Maïssane QASMI, Dona DOSSA
 # Licenceless
 
 from _tkinter import TclError
