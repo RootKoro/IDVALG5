@@ -1,0 +1,4 @@
+blurgenerator==1.0.4
+numpy
+opencv-python
+scikit-learn
