@@ -256,55 +256,55 @@ def help_menu():
     print("\nex. img_drawer.py -i lion.png -b gaussian -k 3 -s 1")
 
 
-try:
-    args = ArgumentParser()
-    args.add_argument("-i", "--image", required=True, help="image path")
-    args.add_argument(
-        "-b",
-        "--blur",
-        required=True,
-        help="blur type : bilateral, gaussian, lens, linear, median and none (for no blur)",
-    )
-    args.add_argument("-k", "--kernel", required=False, help="kernel size")
-    args.add_argument("-s", "--speed", required=False, help="speed of the turtle")
-    args.add_argument("-c", "--coloring", required=True, help="coloring algorithm")
-    args = vars(args.parse_args())
+#try:
+args = ArgumentParser()
+args.add_argument("-i", "--image", required=True, help="image path")
+args.add_argument(
+    "-b",
+    "--blur",
+    required=True,
+    help="blur type : bilateral, gaussian, lens, linear, median and none (for no blur)",
+)
+args.add_argument("-k", "--kernel", required=False, help="kernel size")
+args.add_argument("-s", "--speed", required=False, help="speed of the turtle")
+args.add_argument("-c", "--coloring", required=True, help="coloring algorithm")
+args = vars(args.parse_args())
 
-    if not exists(args["image"]):
-        print("error: File does not exist !")
-        exit(1)
-    if args["blur"] not in BLURS:
-        print(f"error: Blur choice must be in {BLURS} !")
-        exit(1)
-    if args["blur"] not in ("none", "default") and args["kernel"] == None:
-        print("error: This blur type needs a kernel size (blur level) !")
-        exit(1)
-    if args["blur"] not in ("none", "default") and int(args["kernel"]) < 1:
-        print("error: The kernel size must be greater than 1 !")
-        exit(1)
-    if args["blur"] in ("gaussian", "median") and int(args["kernel"]) % 2 == 0:
-        print("error: For the gaussian or median blur, the kernel value must be odd !")
-        exit(1)
-    if args["speed"] and int(args["speed"]) not in range(11):
-        print(
-            "warning: Speed should be within [0, 10], other values are considerated as 10"
-        )
-    if args["coloring"] not in COLORS:
-        print(f"error: Coloring choice must be one of the following: {COLORS}")
-
-    svd = ImgDrawer(
-        args["blur"],
-        args["coloring"],
-        int(args["kernel"]) if args["kernel"] else 0,
-        int(args["speed"]) if args["speed"] else 0,
-        SAVANE_PALETTE,
+if not exists(args["image"]):
+    print("error: File does not exist !")
+    exit(1)
+if args["blur"] not in BLURS:
+    print(f"error: Blur choice must be in {BLURS} !")
+    exit(1)
+if args["blur"] not in ("none", "default") and args["kernel"] == None:
+    print("error: This blur type needs a kernel size (blur level) !")
+    exit(1)
+if args["blur"] not in ("none", "default") and int(args["kernel"]) < 1:
+    print("error: The kernel size must be greater than 1 !")
+    exit(1)
+if args["blur"] in ("gaussian", "median") and int(args["kernel"]) % 2 == 0:
+    print("error: For the gaussian or median blur, the kernel value must be odd !")
+    exit(1)
+if args["speed"] and int(args["speed"]) not in range(11):
+    print(
+        "warning: Speed should be within [0, 10], other values are considerated as 10"
     )
-    svd.draw(args["image"])
-    svd.finisher(args["image"])
-except TclError:
-    print("Forced closing of sketch!")
-except TypeError:
-    print("error: Unsupported type of file given !")
-except Exception as e:
-    print(e)
-    help_menu()
+if args["coloring"] not in COLORS:
+    print(f"error: Coloring choice must be one of the following: {COLORS}")
+
+svd = ImgDrawer(
+    args["blur"],
+    args["coloring"],
+    int(args["kernel"]) if args["kernel"] else 0,
+    int(args["speed"]) if args["speed"] else 0,
+    SAVANE_PALETTE,
+)
+svd.draw(args["image"])
+svd.finisher(args["image"])
+# except TclError:
+#     print("Forced closing of sketch!")
+# except TypeError:
+#     print("error: Unsupported type of file given !")
+# except Exception as e:
+#     print(e)
+#     help_menu()
