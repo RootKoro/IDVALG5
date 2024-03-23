@@ -306,6 +306,27 @@ if args["speed"] and int(args["speed"]) not in range(11):
     )
 if args["coloring"] not in COLORS:
     print(f"error: Coloring choice must be one of the following: {COLORS}")
+if not exists(args["image"]):
+    print("error: File does not exist !")
+    exit(1)
+if args["blur"] not in BLURS:
+    print(f"error: Blur choice must be in {BLURS} !")
+    exit(1)
+if args["blur"] not in ("none", "default") and args["kernel"] == None:
+    print("error: This blur type needs a kernel size (blur level) !")
+    exit(1)
+if args["blur"] not in ("none", "default") and int(args["kernel"]) < 1:
+    print("error: The kernel size must be greater than 1 !")
+    exit(1)
+if args["blur"] in ("gaussian", "median") and int(args["kernel"]) % 2 == 0:
+    print("error: For the gaussian or median blur, the kernel value must be odd !")
+    exit(1)
+if args["speed"] and int(args["speed"]) not in range(11):
+    print(
+        "warning: Speed should be within [0, 10], other values are considerated as 10"
+    )
+if args["coloring"] not in COLORS:
+    print(f"error: Coloring choice must be one of the following: {COLORS}")
 
 svd = ImgDrawer(
     args["blur"],
@@ -315,7 +336,7 @@ svd = ImgDrawer(
     SAVANE_PALETTE,
 )
 svd.draw(args["image"])
-# svd.finisher(args["image"])s
+svd.finisher(args["image"])
 # except TclError:
 #     print("Forced closing of sketch!")
 # except TypeError:
