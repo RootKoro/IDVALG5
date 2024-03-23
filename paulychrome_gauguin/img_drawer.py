@@ -95,7 +95,14 @@ class ImgDrawer:
         height = len(image)
         for y, row in enumerate(image):
             for x, value in enumerate(row):
-                if (rgb and value == rgb) or (not rgb and value <= 127):
+                if not rgb and value <= 127:
+                    coords.append([x, height - y])
+                if (
+                    rgb
+                    and value[0] == rgb[0]
+                    and value[1] == rgb[1]
+                    and value[2] == rgb[2]
+                ):
                     coords.append([x, height - y])
         return coords
 
@@ -223,7 +230,11 @@ class ImgDrawer:
             height, width, _ = image.shape
             for color in self.palette:
                 color_coords = self.get_pixel_coords(image, color)
-                hex_color = self.utils.rgb_to_hex(color[0], color[1], color[2])
+                hex_color = self.utils.rgb_to_hex(
+                    int(color[0]),
+                    int(color[1]),
+                    int(color[2]),
+                )
 
                 self.painter(width, height, color_coords, hex_color)
         else:
@@ -233,7 +244,11 @@ class ImgDrawer:
             ngroup = len(kmeans.cluster_centers_)
             for i in range(ngroup):
                 color = kmeans.cluster_centers_[i]
-                color = self.utils.rgb_to_hex(color[0], color[1], color[2])
+                color = self.utils.rgb_to_hex(
+                    int(color[0]),
+                    int(color[1]),
+                    int(color[2]),
+                )
                 coords = self.get_pixel_coords(mapping, i)
                 self.painter(width, height, coords, color)
         done()
@@ -256,55 +271,55 @@ def help_menu():
     print("\nex. img_drawer.py -i lion.png -b gaussian -k 3 -s 1")
 
 
-try:
-    args = ArgumentParser()
-    args.add_argument("-i", "--image", required=True, help="image path")
-    args.add_argument(
-        "-b",
-        "--blur",
-        required=True,
-        help="blur type : bilateral, gaussian, lens, linear, median and none (for no blur)",
-    )
-    args.add_argument("-k", "--kernel", required=False, help="kernel size")
-    args.add_argument("-s", "--speed", required=False, help="speed of the turtle")
-    args.add_argument("-c", "--coloring", required=True, help="coloring algorithm")
-    args = vars(args.parse_args())
+# try:
+args = ArgumentParser()
+args.add_argument("-i", "--image", required=True, help="image path")
+args.add_argument(
+    "-b",
+    "--blur",
+    required=True,
+    help="blur type : bilateral, gaussian, lens, linear, median and none (for no blur)",
+)
+args.add_argument("-k", "--kernel", required=False, help="kernel size")
+args.add_argument("-s", "--speed", required=False, help="speed of the turtle")
+args.add_argument("-c", "--coloring", required=True, help="coloring algorithm")
+args = vars(args.parse_args())
 
-    if not exists(args["image"]):
-        print("error: File does not exist !")
-        exit(1)
-    if args["blur"] not in BLURS:
-        print(f"error: Blur choice must be in {BLURS} !")
-        exit(1)
-    if args["blur"] not in ("none", "default") and args["kernel"] == None:
-        print("error: This blur type needs a kernel size (blur level) !")
-        exit(1)
-    if args["blur"] not in ("none", "default") and int(args["kernel"]) < 1:
-        print("error: The kernel size must be greater than 1 !")
-        exit(1)
-    if args["blur"] in ("gaussian", "median") and int(args["kernel"]) % 2 == 0:
-        print("error: For the gaussian or median blur, the kernel value must be odd !")
-        exit(1)
-    if args["speed"] and int(args["speed"]) not in range(11):
-        print(
-            "warning: Speed should be within [0, 10], other values are considerated as 10"
-        )
-    if args["coloring"] not in COLORS:
-        print(f"error: Coloring choice must be one of the following: {COLORS}")
-
-    svd = ImgDrawer(
-        args["blur"],
-        args["coloring"],
-        int(args["kernel"]) if args["kernel"] else 0,
-        int(args["speed"]) if args["speed"] else 0,
-        SAVANE_PALETTE,
+if not exists(args["image"]):
+    print("error: File does not exist !")
+    exit(1)
+if args["blur"] not in BLURS:
+    print(f"error: Blur choice must be in {BLURS} !")
+    exit(1)
+if args["blur"] not in ("none", "default") and args["kernel"] == None:
+    print("error: This blur type needs a kernel size (blur level) !")
+    exit(1)
+if args["blur"] not in ("none", "default") and int(args["kernel"]) < 1:
+    print("error: The kernel size must be greater than 1 !")
+    exit(1)
+if args["blur"] in ("gaussian", "median") and int(args["kernel"]) % 2 == 0:
+    print("error: For the gaussian or median blur, the kernel value must be odd !")
+    exit(1)
+if args["speed"] and int(args["speed"]) not in range(11):
+    print(
+        "warning: Speed should be within [0, 10], other values are considerated as 10"
     )
-    svd.draw(args["image"])
-    svd.finisher(args["image"])
-except TclError:
-    print("Forced closing of sketch!")
-except TypeError:
-    print("error: Unsupported type of file given !")
-except Exception as e:
-    print(e)
-    help_menu()
+if args["coloring"] not in COLORS:
+    print(f"error: Coloring choice must be one of the following: {COLORS}")
+
+svd = ImgDrawer(
+    args["blur"],
+    args["coloring"],
+    int(args["kernel"]) if args["kernel"] else 0,
+    int(args["speed"]) if args["speed"] else 0,
+    SAVANE_PALETTE,
+)
+svd.draw(args["image"])
+# svd.finisher(args["image"])s
+# except TclError:
+#     print("Forced closing of sketch!")
+# except TypeError:
+#     print("error: Unsupported type of file given !")
+# except Exception as e:
+#     print(e)
+#     help_menu()
