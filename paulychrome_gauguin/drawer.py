@@ -1,22 +1,25 @@
 # Author: Maïssane QASMI, Dona DOSSA, Cyr Mathieu GUEYE
 # Licenceless
 
-from _tkinter import TclError
 from argparse import ArgumentParser
-from numpy import median, Infinity
 from os.path import exists
 from turtle import Screen, Turtle, done
 
+from _tkinter import TclError
 from blurgenerator import lens_blur
 from cv2 import (
-    GaussianBlur,
+    COLOR_BGR2RGB,
     Canny,
+    GaussianBlur,
     bilateralFilter,
     bitwise_not,
     boxFilter,
+    cvtColor,
     imread,
+    imshow,
     medianBlur,
 )
+from numpy import Infinity, int_, median
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KDTree
 
@@ -66,32 +69,35 @@ def get_pixel_coords(image: any, rgb: tuple | None = None) -> list:
     return coords
 
 
-# def get_pixel_color(pixel_rgb: tuple, palette: list) -> tuple:
-#     """ """
-#     diffs = []
-#     for palette_color in palette:
-#         diff = 0
-#         for i, val in enumerate(pixel_rgb):
-#             diff += abs(palette_color[i] - val)
-#         diffs.append(diff)
-#     tiniest_diff_index = diffs.index(min(diffs))
-#     return palette[tiniest_diff_index]
+def get_pixel_color(pixel_rgb: tuple, palette: list) -> tuple:
+    """ """
+    diffs = []
+    for palette_color in palette:
+        diff = 0
+        for i, val in enumerate(pixel_rgb):
+            diff += abs(palette_color[i] - val)
+        diffs.append(diff)
+    tiniest_diff_index = diffs.index(min(diffs))
+    return palette[tiniest_diff_index]
 
 
-# def pixel_classifier(image: any) -> any:
-#     """ """
-#     for row in image:
-#         for i, pixel in enumerate(row):
-#             row[i] = get_pixel_color(pixel)
-#     return image
+def pixel_classifier(image: any, palette: list) -> any:
+    """ """
+    for row_id, row in enumerate(image):
+        for i, pixel in enumerate(row):
+            image[row_id][i] = get_pixel_color(pixel, palette)
+    return image
 
 
-# def pixel_clusterer(image: any) -> any:
-#     """ """
-#     height, width, dimensions = image.shape
-#     switched = image.reshape((height * width, dimensions))
-#     kmeans = KMeans().fit(switched)
-#     return kmeans
+def get_cluster_colors(image: any) -> any:
+    """ """
+    image = cvtColor(image, COLOR_BGR2RGB)
+    switched = image.reshape((image.shape[1] * image.shape[0], 2))
+    kmeans = KMeans(n_clusters=5, n_init=10)
+    _ = kmeans.fit(image)
+    centroid = kmeans.cluster_centers_
+    colors = list(map(lambda x: (int(x[0]), int(x[1]), int(x[2])), centroid))
+    return colors
 
 
 def image_blurer(image: any, blur_type: str) -> any:
@@ -130,16 +136,16 @@ def sketch_edge_definer(image: any) -> any:
     return bitwise_not(Canny(image, median_value, 255))
 
 
-# def painter(width: int, height: int, coords: list, color: str, drawer: Turtle) -> None:
-#     """ """
-#     drawer.color(color)
-#     drawer.penup()
-#     for coord in coords:
-#         drawer.setpos(coord[0] - (width / 2), coord[1] - (height / 2))
-#         drawer.dot(1)
+def painter(width: int, height: int, coords: list, color: str, drawer: Turtle) -> None:
+    """ """
+    drawer.color(color)
+    drawer.penup()
+    for coord in coords:
+        drawer.setpos(coord[0] - (width / 2), coord[1] - (height / 2))
+        drawer.dot(1)
 
 
-def draw(image: any, height: int, width: int, drawer: Turtle) -> None:
+def draw(coords: list, height: int, width: int, drawer: Turtle) -> None:
     """
     1. get the sketch of the image
     2. get non-white pixels' coordinates
@@ -148,8 +154,6 @@ def draw(image: any, height: int, width: int, drawer: Turtle) -> None:
     5. set up the screen and the drawer
     6. drawing of each pixel following the algorithm of `Nearest neighbour search`
     """
-    # image = sketch_edge_definer(image)
-    coords = get_pixel_coords(image)
     tree = KDTree(coords)
     current = 0
     explored_ind = [0]
@@ -180,12 +184,11 @@ def draw(image: any, height: int, width: int, drawer: Turtle) -> None:
                 current = i[1]
 
 
-# def finisher(img_path: str, coloring: str) -> None:
+# def finisher(image: any, coloring_model: str, drawer: Turtle, palette: list) -> None:
 #     """ """
-#     image = imread(img_path)
-#     if coloring == "classification":
-#         image = pixel_classifier(image)
-#         height, width, _ = image.shape
+#     height, width, _ = image.shape
+#     if coloring_model == "classification":
+#         image = pixel_classifier(image, palette)
 #         for color in palette:
 #             color_coords = get_pixel_coords(image, color)
 #             hex_color = rgb_to_hex(
@@ -193,11 +196,9 @@ def draw(image: any, height: int, width: int, drawer: Turtle) -> None:
 #                 int(color[1]),
 #                 int(color[2]),
 #             )
-
-#             painter(width, height, color_coords, hex_color)
+#             painter(width, height, color_coords, hex_color, drawer)
 #     else:
 #         kmeans = pixel_clusterer(image)
-#         height, width, _ = image.shape
 #         mapping = kmeans.labels_.reshape((height, width))
 #         ngroup = len(kmeans.cluster_centers_)
 #         for i in range(ngroup):
@@ -208,8 +209,84 @@ def draw(image: any, height: int, width: int, drawer: Turtle) -> None:
 #                 int(color[2]),
 #             )
 #             coords = get_pixel_coords(mapping, i)
-#             painter(width, height, coords, color)
-#     done()
+#             painter(width, height, coords, color, drawer)
+
+
+# def artist(
+#     image2D: any,
+#     image3D: any,
+#     drawer: Turtle,
+#     coloring_model: str,
+#     palette: list,
+# ) -> None:
+#     """ """
+#     height, width = image2D.shape
+#     coords = get_pixel_coords(image2D)
+#     tree = KDTree(coords)
+#     current = 0
+#     explored_ind = [0]
+
+#     while len(coords) > 1:
+#         drawer.goto(coords[current][0] - (width / 2), coords[current][1] - (height / 2))
+#         ind = tree.query_radius([coords[current]], r=1.42)
+#         ind = ind[0].tolist()
+#         ind = [value for value in ind if value not in explored_ind]
+
+#         if len(ind) >= 1:
+#             drawer.pendown()
+#             drawer.goto(
+#                 coords[ind[0]][0] - (width / 2), coords[ind[0]][1] - (height / 2)
+#             )
+#             drawer.penup()
+#             explored_ind.append(ind[0])
+#             current = ind[0]
+
+#         else:
+#             tmp = coords[current]
+#             coords = [coords[i] for i in range(0, len(coords)) if i not in explored_ind]
+#             explored_ind = []
+#             if len(coords) > 1:
+#                 tree = KDTree(coords)
+#                 _, i = tree.query([tmp], k=2)
+#                 i = i.flatten()
+#                 current = i[1]
+
+#     height, width, _ = image3D.shape
+#     current = 0
+#     explored_ind = [0]
+#     if coloring_model == "classification":
+#         image = pixel_classifier(image3D, palette)
+#         for color in palette:
+#             print(color)
+#             color_coords = get_pixel_coords(image, color)
+#             if not color_coords:
+#                 continue
+#             print("color found!")
+#             hex_color = rgb_to_hex(
+#                 int(color[0]),
+#                 int(color[1]),
+#                 int(color[2]),
+#             )
+#             drawer.color(hex_color)
+#             # for coord in color_coords:
+#             #     drawer.setpos(coord[0] - (width / 2), coord[1] - (height / 2))
+#             #     drawer.pendown()
+#             #     drawer.dot(1)
+#             #     drawer.penup()
+#         painter(width, height, color_coords, hex_color, drawer)
+#     else:
+#         kmeans = pixel_clusterer(image)
+#         mapping = kmeans.labels_.reshape((height, width))
+#         ngroup = len(kmeans.cluster_centers_)
+#         for i in range(ngroup):
+#             color = kmeans.cluster_centers_[i]
+#             color = rgb_to_hex(
+#                 int(color[0]),
+#                 int(color[1]),
+#                 int(color[2]),
+#             )
+#             coords = get_pixel_coords(mapping, i)
+#             painter(width, height, coords, color, drawer)
 
 
 def help_menu():
@@ -242,7 +319,6 @@ args.add_argument("-k", "--kernel", required=False, help="kernel size")
 args.add_argument("-s", "--speed", required=False, help="speed of the turtle")
 args.add_argument("-m", "--model", required=True, help="coloring algorithm")
 args = vars(args.parse_args())
-print("argparser OK")
 
 if not exists(args["image"]):
     print("error: File does not exist !")
@@ -266,26 +342,38 @@ if args["speed"] and int(args["speed"]) not in range(11):
 if args["model"] not in COLORS:
     print(f"error: Coloring choice must be one of the following: {COLORS}")
 
-print("checking OK")
 
-image = imread(args["image"])
-im2D = imread(args["image"], 2)
-print("load images OK")
+image3D = imread(args["image"])
+image2D = imread(args["image"], 2)
 blur_type = args["blur"]
 ksize = int(args["kernel"]) if args["kernel"] else None
 speed = int(args["speed"]) if args["speed"] else 0
 speed = speed if speed in range(11) else 10
 model = args["model"]
-print("get args OK")
-height, width = im2D.shape
+height, width = image2D.shape
 
 screen.tracer(speed)
 screen.screensize(width, height)
 
 # 2D sketch drawing
-blured = image_blurer(im2D, blur_type)
+blured = image_blurer(image2D, blur_type)
 sketch = sketch_edge_definer(blured)
-draw(sketch, height, width, drawer)
+sketch_coords = get_pixel_coords(sketch)
+draw(sketch_coords, height, width, drawer)
+if model == "classification":
+    image_art = pixel_classifier(image3D, SAVANE_PALETTE)
+    palette = SAVANE_PALETTE
+else:
+    image_art = image3D
+    palette = get_cluster_colors(image3D)
+
+for color in palette:
+    pixel_coords = get_pixel_coords(image_art, color)
+    if len(pixel_coords) > 0:
+        pixel_color = rgb_to_hex(int(color[0]), int(color[1]), int(color[2]))
+        drawer.color(pixel_color)
+        draw(pixel_coords, height, width, drawer)
+
 
 done()
 
