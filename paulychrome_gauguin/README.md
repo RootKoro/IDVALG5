@@ -30,7 +30,7 @@ python3 path/to/img_drawer.py -i|--image path/to/image -a|--algorithm algo -b|--
 Avec :
 - `algo` : `classification`, `clustering`
 - `blur_type` : `none`, `default`, `bilateral`, `gaussian`, `lens`, `linear`, `median`
-- `ksize` : un entier strictement positif (`ksize > 0`)
+- `ksize` : un entier strictement positif (`ksize > 0`) ; impaire pour les valeurs `median` et `gaussian` de blur_type
 - `color_palette` : une liste json non limitée de couleurs sous forme `(r, g, b)`
 - `speed` : un entier compris entre `[0, 10]`
 
