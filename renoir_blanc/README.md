@@ -1,4 +1,4 @@
-# Zhang GUI
+# Renoir Blanc
 
 IDV-ALGO5 | Etape 4 | Documentation
 
@@ -63,5 +63,5 @@ Structure de dossier:
 à partir du répertoire root:
 
 ```bash
-python3 -i zhang_gui/img_drawer.py assets/licorne.png -b none -s 5
+python3 renoir_blanc/img_drawer.py -i assets/licorne.png -b none -s 5
 ```
