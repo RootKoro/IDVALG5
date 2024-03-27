@@ -1,4 +1,5 @@
-blurgenerator==1.0.4
+_tkinter
+blurgenerator
 numpy
 opencv-python
 scikit-learn
