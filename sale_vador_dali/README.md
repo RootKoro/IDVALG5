@@ -19,10 +19,11 @@ pip install -r requirements.txt
 ```
 3. Exécuter le programme avec la commande:
 ```bash
-python3 -i|--image path/to/img_drawer.py <img_path> -b|--blur <blur_type> -k|--kernel <ksize>
+python3 path/to/img_drawer.py -i|--image <img_path> -b|--blur <blur_type> -k|--kernel <ksize>
 ```
-`blur_type` avec une des valeurs suivantes : bilateral, gaussian, lens, linear, median, none, default
-`ksize` a strictly positive integer (must be odd for the gaussian and median blur)
+Avec :
+- `blur_type` : `none`, `default`, `bilateral`, `gaussian`, `lens`, `linear`, `median`
+- `ksize` : un entier strictement positif (`ksize > 0`) ; impaire pour les valeurs `median` et `gaussian` de blur_type
 
 
 ## Justification du choix
