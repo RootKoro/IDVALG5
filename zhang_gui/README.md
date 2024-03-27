@@ -63,5 +63,5 @@ Structure de dossier:
 à partir du répertoire root:
 
 ```bash
-python3 -i zhang_gui/img_drawer.py assets/licorne.png -b median -k 1 -s 10
+python3 zhang_gui/img_drawer.py -i assets/licorne.png -b median -k 1 -s 10
 ```

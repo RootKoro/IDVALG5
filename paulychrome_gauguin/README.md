@@ -25,7 +25,7 @@ pip install -r requirements.txt
 ```
 3. Exécuter le programme avec la commande:
 ```bash
-python3 -i|--image path/to/img_drawer.py -a|--algorithm algo -b|--blur blur_type [-k|--kernel ksize] -p|--palette color_palette [-s|--speed speed]
+python3 path/to/img_drawer.py -i|--image path/to/image -a|--algorithm algo -b|--blur blur_type [-k|--kernel ksize] -p|--palette color_palette [-s|--speed speed]
 ```
 Avec :
 - `algo` : `classification`, `clustering`
