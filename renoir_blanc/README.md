@@ -47,7 +47,7 @@ Le programme fonctionne comme suite:
 6. Récupération des coordonnées des pixels n'appartenant pas à l'arrière plan
 7. Initialisation d'un `KDTree` (organisation des pixels dans un espace k-dimensionnel)
 8. Paramétrage de l'écran qui servira à afficher le dessin.
-9. A partir du centre, application de l'algorithme de `Nearest Neighbore Search` afin de dessiner les contour pixel par pixel à partir en se basant sur les pixels colorés les plus proches les uns des autres, pour lui donner un meilleur effet visuel
+9. A partir du centre, application de l'algorithme de `Nearest Neighbore Search` afin de dessiner les contour pixel par pixel en se basant sur les pixels colorés les plus proches les uns des autres, pour lui donner un meilleur effet visuel
 8. cacher les curseurs (tortues)
 
 ## Exemple
