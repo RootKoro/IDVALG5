@@ -91,7 +91,10 @@ class ImgDrawer:
         self.utils = Utils()
 
     def get_pixel_coords(self, image: any, rgb: tuple | None = None) -> list:
-        """ """
+        """
+        If RGB is not provided, returns the coordinates of none white pixels
+        If RGB is provided, returns the coordinates of pixels of that color
+        """
         coords = []
         height = len(image)
         for y, row in enumerate(image):
@@ -106,7 +109,10 @@ class ImgDrawer:
         return coords
 
     def get_pixel_color(self, pixel_rgb: tuple) -> tuple:
-        """ """
+        """
+        Calculate the difference between the pixel's color and the palette's colors
+        and returns the palette's color that provides the least difference.
+        """
         diffs = []
         for palette_color in self.palette:
             diff = 0
@@ -117,14 +123,25 @@ class ImgDrawer:
         return self.palette[tiniest_diff_index]
 
     def classify_pixels(self, image: any) -> any:
-        """ """
+        """
+        Changes each pixel's color into the the it's closest from the palette
+        """
         for row_id, row in enumerate(image):
             for i, pixel in enumerate(row):
                 image[row_id][i] = self.get_pixel_color(pixel)
         return image
 
     def get_cluster_colors(self, image: any) -> any:
-        """ """
+        """
+        Get a palette of dominant colors from the given image.
+        1. convert the image from BRG to RGB format
+        2. reshape it so it can be passed to a clustering algorithm
+        3. initialize the KMeans object that will perform k-means clustering algorithm
+        4. Compute the k-means clustering algorithm
+        5. Get the clusters centers
+        6. Convert them into a list of RGB colors
+        7. Returns the RGB color list
+        """
         image = cvtColor(image, COLOR_BGR2RGB)
         switched = image.reshape((image.shape[1] * image.shape[0], 3))
         kmeans = KMeans(n_clusters=5, n_init=10)
@@ -134,7 +151,10 @@ class ImgDrawer:
         return colors
 
     def blur_image(self, image: any) -> any:
-        """ """
+        """
+        From the choice of the user,
+        returns the image in the specified blur
+        """
         if self.blur_type == "bilateral":
             return bilateralFilter(image, self.ksize, 75, 75)
         elif self.blur_type == "gaussian":
@@ -151,12 +171,23 @@ class ImgDrawer:
             return image
 
     def define_sketch_edge(self, image: any) -> any:
-        """ """
+        """
+        Defines the sketch of an image
+        1. calculates the median value of the pixels
+        2. detects the edges of the image using the Canny edge algorithm
+        3. inverse the new image obtained with the Canny edge algorithm
+        4. returns the inversed image
+        """
         median_value = median(image)
         return bitwise_not(Canny(image, median_value, 255))
 
     def draw(self, coords: list) -> None:
-        """ """
+        """
+        Draws each pixel from it's coordinates in the `coords` list
+        while using a k-dimensional tree to place the coordinates,
+        helping to get the nearest pixel to represent after
+        drawing each pixel (NNS).
+        """
         tree = KDTree(coords)
         current = 0
         explored_ind = [0]
@@ -193,7 +224,9 @@ class ImgDrawer:
                     current = i[1]
 
     def theArtist(self) -> None:
-        """ """
+        """
+        Draws the sketch of `self.image` and paints it artistically.
+        """
         blured = self.blur_image(self.image2D)
         sketch = self.define_sketch_edge(blured)
         sketch_coords = self.get_pixel_coords(sketch)
