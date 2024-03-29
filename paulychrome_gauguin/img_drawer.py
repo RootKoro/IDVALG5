@@ -144,7 +144,7 @@ class ImgDrawer:
         """
         image = cvtColor(image, COLOR_BGR2RGB)
         switched = image.reshape((image.shape[1] * image.shape[0], 3))
-        kmeans = KMeans(n_clusters=5, n_init=10)
+        kmeans = KMeans(n_clusters=10, n_init=10)
         _ = kmeans.fit(switched)
         centroid = kmeans.cluster_centers_
         colors = list(map(lambda x: (int(x[0]), int(x[1]), int(x[2])), centroid))
