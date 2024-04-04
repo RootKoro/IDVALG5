@@ -9,7 +9,7 @@ Ce programme a pour but de peindre une image de manière animée et réaliste gr
 ## Abréviations
 
 - `KDTree` = `k-dimentional tree`
-- `NNS` = `Nearest Neightbore Search`
+- `NNS` = `Nearest Neighbor Search`
 - `Canny Edge Detection` = `CED`
 
 ## Requirements
